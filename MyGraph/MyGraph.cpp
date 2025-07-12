@@ -8,6 +8,10 @@
 #include <numeric>  // std::iota
 #include <map>      //std::map
 #include <unordered_map>  //std::unordered_map
+#include <unordered_set>  //std::unordered_set
+#include <functional>
+
+#include <cassert>
 
 #include"MyGraph.h"
 using namespace std;
@@ -19,8 +23,32 @@ enum LeetcodeExam {
     None,
 };
 
+
+
 int main()
 {
+    int n = 5;
+    vector<vector<int>> edges = {
+        {0, 1, 2},
+        {0, 4, 8},
+        {1, 2, 3},
+        {1, 4, 2},
+        {2, 3, 1},
+        {3, 4, 1}
+    };
+    int distanceThreshold = 2;
+    vector<vector<int>> qfwe = { {0,1} };
+    vector<vector<int>> graph12345 = {
+    {1},    // 0 → 1
+    {2},    // 1 → 2
+    {3, 0}, // 2 → 3, 0
+    {}      // 3 has no outgoing edges
+    };
+
+    //vector<vector<int>> asf = findSCCs(4, graph12345);
+
+
+
     //try case
     LeetcodeExam ExamEnum = Leetcodexxx;    //ChangeForExam
     //intput
@@ -249,6 +277,217 @@ int main()
       3, 5, 7 在 8 前*/
     #pragma endregion
 
+    #pragma region UnionFind
+    std::cout << "\n====== 測試五、 Union Find 測試 ======" << std::endl;
+    // 建構子：UnionFind(int n)
+    cout << "測試1. Union Find 建構式 UnionFind(int n)：\n";
+    int uf_size = 5;
+    UnionFind uf1(uf_size);
+    cout << "所有初始 root：";
+    for (int i = 0; i < uf_size; i++)
+        cout << uf1.find(i) << " ";
+    assert(uf1.sameSet(0, 1) == false);
+    uf1.unite(0, 1);
+    assert(uf1.sameSet(0, 1) == true);
+    uf1.unite(1, 2);
+    assert(uf1.sameSet(0, 2) == true);
+    cout << "\n相連(0 ~ 2)後：";
+    for (int i = 0; i < uf_size; i++)
+        cout << uf1.find(i) << " ";
+    cout << "\n[OK] 測試1. Union Find 功能 & 建構式，通過!\n";
+
+    // 建構子：UnionFind(vector<int>)
+    cout << "測試2. Union Find 建構式 UnionFind(vector<int>)：\n";
+    std::vector<int> vec_uf = { 10, 20, 30 };
+    UnionFind uf2(vec_uf);
+    cout << "所有初始 root：";
+    for (int i = 0; i < vec_uf.size(); i++)
+        cout << uf2.find(i) << " ";
+    assert(uf2.sameSet(1, 2) == false);
+    uf2.unite(1, 2);
+    assert(uf2.sameSet(1, 2) == true);
+    cout << "\n相連(1 ~ 2)後：";
+    for (int i = 0; i < vec_uf.size(); i++)
+        cout << uf2.find(i) << " ";
+    cout << "\n[OK] 測試2. Union Find 功能 & 建構式，通過!\n";
+
+
+    // 建構子：UnionFind(vector<vector<int>>)
+    cout << "測試3. Union Find 建構式 UnionFind(vector<vector<int>>)：\n";
+    std::vector<std::vector<int>> grid_uf = {
+        {1, 0, 1},
+        {0, 1, 0},
+        {1, 1, 1}
+    };
+    UnionFind uf3(grid_uf); // 應該有 9 個節點
+    cout << "所有初始 root：";
+    for(int r = 0;r < grid_uf.size();r++)
+        for (int c = 0; c < grid_uf[0].size(); c++) {
+            int idx_uf = r * grid_uf[0].size() + c;
+            cout << uf3.find(idx_uf) << " ";
+        }
+    int cols = grid_uf[0].size();
+    int a = 0 * cols + 0; // (0,0)
+    int b = 1 * cols + 1; // (1,1)
+    assert(uf3.sameSet(a, b) == false);
+    uf3.unite(a, b);
+    assert(uf3.sameSet(a, b) == true);
+    cout << "\n相連([0,0] - [1,1])後：";
+    for (int r = 0; r < grid_uf.size(); r++)
+        for (int c = 0; c < grid_uf[0].size(); c++) {
+            int idx_uf = r * grid_uf[0].size() + c;
+            cout << uf3.find(idx_uf) << " ";
+        }
+    // 測試 clear() 與 destructor
+    uf1.clear(); // 不會崩
+    cout << "\n[OK] 測試3. Union Find 功能 & 建構式，通過!\n";
+    std::cout << "[OK] 所有 Union Find 測試通過!" << std::endl;  
+
+
+    cout << "測試4. Union Find 大量連通：\n";
+    int uf_size2 = 20;
+    UnionFind uf4(uf_size2);
+    cout << "所有初始 root：";
+    for (int i = 0; i < uf_size2; i++)
+        cout << uf4.find(i) << " ";
+
+    for (int i = 1; i < uf_size2; i++) {
+        if(i % 3 == 1)
+            uf4.unite(1, i);
+        else if(i % 3 == 2)
+            uf4.unite(2, i);
+        else
+            uf4.unite(0, i);
+    }
+    cout << "\n3的餘數分root：";
+    for (int i = 0; i < uf_size2; i++)
+        cout << uf4.find(i) << " ";
+    uf4.unite(0, 1);// => rank[0] = 2,rank[1] = 1
+    uf4.unite(0, 2);
+    cout << "\n最後全部相連：";
+    for (int i = 0; i < uf_size2; i++)
+        cout << uf4.find(i) << " ";
+    cout << "\n[OK] 測試4. Union Find 功能 & 建構式，通過!\n";
+
+    #pragma endregion
+
+    #pragma region MST
+    std::cout << "\n====== 測試六、 MST (Minimum Spanning Tree) 測試 ======" << std::endl;
+    MyGraph graph_MST;
+    std::vector<std::vector<int>> edges_MST = {
+        {0, 1, 1},  // 0 - 1 (1)
+        {0, 2, 4},  // 0 - 2 (4)
+        {1, 2, 2},  // 1 - 2 (2)
+        {1, 3, 6},  // 1 - 3 (6)
+        {2, 3, 3}   // 2 - 3 (3)
+    };
+    std::cout << "測試圖(Graph edges):\n";
+    for (const auto& edge : edges_MST) {
+        std::cout << edge[0] << " - " << edge[1] << " (" << edge[2] << ")\n";
+    }
+
+    // 建立鄰接表 (vector<vector<pair<int,int>>>)，用 pair<鄰接點, 權重>
+    std::vector<std::vector<std::pair<int, int>>> adj(4);
+    for (auto& e : edges_MST) {
+        int u = e[0], v = e[1], w = e[2];
+        adj[u].emplace_back(v, w);
+        adj[v].emplace_back(u, w); // 無向圖雙向加入
+    }
+    int NodeSize_MST = 4;
+
+    // 測試 Kruskal_Weight
+    int kruskal_w = graph_MST.Kruskal_Weight(NodeSize_MST, edges_MST);
+    std::cout << "測試1. Kruskal MST total weight: " << kruskal_w << std::endl;
+
+    // 測試 Kruskal_State
+    auto kruskal_mst = graph_MST.Kruskal_State(NodeSize_MST, edges_MST);
+    std::cout << "測試2. Kruskal MST edges:" << std::endl;
+    for (auto& e : kruskal_mst) {
+        std::cout << e[0] << " - " << e[1] << " weight " << e[2] << std::endl;
+    }
+
+    // 測試 Prim_Weight
+    int prim_w = graph_MST.Prim_Weight(NodeSize_MST, adj);
+    std::cout << "測試3. Prim MST total weight: " << prim_w << std::endl;
+
+    // 測試 Prim_State
+    auto prim_mst = graph_MST.Prim_State(NodeSize_MST, adj);
+    std::cout << "測試4. Prim MST edges:" << std::endl;
+    for (auto& e : prim_mst) {
+        if (e[0] == -1) continue; // 根節點的 parent 是 -1，跳過
+        std::cout << e[0] << " - " << e[1] << " weight " << e[2] << std::endl;
+    }
+    #pragma endregion
+
+    #pragma region Kosaraju && Tarjan (CC = Connected Component)
+    std::cout << "\n====== 測試七、 Kosaraju && Tarjan (CC = Connected Component) 測試 ======" << std::endl;
+    std::cout << "測試1. Tarjan find bridges (無向圖)：\n";
+    int CC_n = 5;
+    /* Bridge 測試圖： 答案：{1,3},{3,4}
+            0
+           / \
+          1 - 2
+          |
+          3
+          |
+          4
+    */
+    vector<vector<int>> graphfor_Bridge = {
+        {1, 2},
+        {0, 2, 3},
+        {0, 1},
+        {1, 4},
+        {3}
+    };
+    MyGraph tarjanBridge;
+    std::cout << "Bridge 測試圖：\n";
+    tarjanBridge.printGraph(graphfor_Bridge);
+    // SCC (Tarjan)
+    auto bridges = tarjanBridge.findBridges(CC_n, graphfor_Bridge);
+    std::cout << "Bridge answer：{ 1,3 }, { 3,4 }\n";
+    std::cout << "Tarjan find Bridges Result:\n";
+    tarjanBridge.printGraphPair(bridges);
+
+
+    std::cout << "測試2. Strongly Connected Component(SCC) (有向圖)：\n";
+    /* Strongly Connected Component(SCC) & Weakly connected component(WCC) 測試圖：
+        0 →  1 → 2
+        ↑    ↓
+        └─  3 → 4
+    */
+    int CC_node = 5;
+    vector<vector<int>> graphforCC = {
+        {1},     // 0
+        {2},     // 1
+        {0, 3},  // 2
+        {4},     // 3
+        {}       // 4
+    };
+
+    // SCC (Tarjan)
+    MyGraph GraphCC;
+    std::cout << "Connected Component 測試圖：\n";
+    GraphCC.printGraph(graphforCC);
+    std::cout << "SCCs answer = { 0, 1, 2 }, { 3 }, { 4 }\n";
+    std::cout << "WCCs answer = { 0, 1, 2, 3, 4 }\n";
+    cout << "Tarjan SCCs Result:\n";
+    auto sccs = GraphCC.findSCCs_Tarjan(CC_node, graphforCC);
+    GraphCC.printGraphCC(sccs);
+
+    // SCC (Kosaraju)
+    cout << "\nKosaraju SCCs Result:\n";
+    auto kos_sccs = GraphCC.findSCCs_Kosaraju(CC_node, graphforCC);
+    GraphCC.printGraphCC(kos_sccs);
+
+
+    // WCC
+    cout << "\nWeakly Connected Components Result:\n";
+    auto wccs = GraphCC.findWWCs(CC_node, graphforCC);
+    GraphCC.printGraphCC(wccs);
+    #pragma endregion
+
+
+
 
     return 0;
     #pragma endregion
@@ -257,6 +496,144 @@ int main()
 }
 
 #pragma region MyGraph
+int MyGraph::Kruskal_Weight(int n, std::vector<std::vector<int>> _edges) {
+    //O(E log E) ≒ O(N^2 * log N^2) ≒ O(N^2 * log N)，每個節點最多有n - 1個，n個節點 => n * (n - 1)/2 (除以2是因為最後兩個節點只有一個邊，會重複一次)
+    std::sort(_edges.begin(), _edges.end(), Myless);
+    UnionFind uf(n);
+    int mst_weight = 0;
+    //O(E) ≒ O(N^2)
+    for (std::vector<int>& edge : _edges) {
+        int from = edge[0], to = edge[1];
+        if (uf.unite(from, to)) {
+            mst_weight += edge[2];
+        }
+    }
+    return mst_weight;
+}
+
+std::vector<std::vector<int>> MyGraph::Kruskal_State(int n, std::vector<std::vector<int>> _edges) {
+    std::sort(_edges.begin(), _edges.end(), Myless);
+    UnionFind uf(n);
+    std::vector<std::vector<int>> MST;
+    for (std::vector<int> edge : _edges) {
+        int from = edge[0], to = edge[1];
+        if (uf.unite(from, to)) {
+            MST.emplace_back(edge);
+        }
+    }
+    return MST;
+}
+
+int MyGraph::Prim_Weight(int n, std::vector<std::vector<T>>& adj) {
+    std::vector<bool> visited(n);
+    std::priority_queue<T, std::vector<T>, std::greater<T>> minheap;
+    minheap.emplace(0, 0);//// 從節點 0 開始 {權重, 節點}
+    int mst_weight = 0;
+
+    while (!minheap.empty()) {
+        T cur = minheap.top(); minheap.pop();
+        int cur_weight = cur.first;
+        int cur_node = cur.second;
+
+        if (visited[cur_node]) continue;
+        visited[cur_node] = true;
+        mst_weight += cur_weight;
+
+        for (T& next : adj[cur_node]) {
+            if (visited[next.first]) continue;
+            minheap.emplace(next.second, next.first);
+        }
+    }
+
+    return mst_weight;
+}
+
+std::vector<std::vector<int>> MyGraph::Prim_State(int n, std::vector<std::vector<T>>& adj) {
+    std::vector<bool> visited(n);
+    std::priority_queue<T, std::vector<T>, std::greater<T>> minheap;
+    minheap.emplace(0, 0);//// 從節點 0 開始 {權重, 節點}
+    std::vector<std::vector<int>> MST;
+    std::vector<int> parent(n, -1);     // parent[i] 為從哪個點來的
+    std::vector<int> weights(n, 1e9);       // 每個點的最小邊權重
+
+    while (!minheap.empty()) {
+        T cur = minheap.top(); minheap.pop();
+        int cur_weight = cur.first;
+        int cur_node = cur.second;
+        if (visited[cur_node]) continue;
+        visited[cur_node] = true;
+        MST.emplace_back(vector<int>{parent[cur_node], cur_node, cur_weight});
+
+        for (T& next : adj[cur_node]) {
+            int next_node = next.first;
+            int next_weight = next.second;
+            if (visited[next_node] || next_weight >= weights[next_node]) continue;
+            weights[next_node] = next_weight;
+            parent[next_node] = cur_node;
+            minheap.emplace(next_weight, next_node);
+        }
+    }
+
+    return MST;
+}
+
+std::vector<pair<int,int>> MyGraph::findBridges(int n, std::vector<std::vector<int>> adj_graph) {
+    TarjanBridge solver;
+    solver.InitialParam(n, adj_graph);
+    return solver.findBridges();
+}
+
+std::vector<std::vector<int>> MyGraph::findSCCs_Tarjan(int n, std::vector<std::vector<int>> adj_graph) {
+    TarjanSCC solver;
+    solver.InitialParam(n, adj_graph);
+    return solver.findSCCs();
+}
+
+std::vector<std::vector<int>> MyGraph::findSCCs_Kosaraju(int n, std::vector<std::vector<int>> adj_graph) {
+    Kosaraju solver;
+    solver.InitialParam(n, adj_graph);
+    return solver.findSCCs();
+}
+
+std::vector<std::vector<int>> MyGraph::findWWCs(int n, std::vector<std::vector<int>> adj_graph) {
+    WCC solver;
+    solver.InitialParam(n, adj_graph);
+    return solver.findWCCs();
+}
+
+void MyGraph::printGraph(const vector<vector<int>>& adj_graph) {
+    for (int i = 0; i < adj_graph.size(); ++i) {
+        cout << i << " -> ";
+        if (adj_graph[i].empty()) {
+            cout << "X";
+        }
+        else {
+            for (int j = 0; j < adj_graph[i].size(); ++j) {
+                cout << adj_graph[i][j];
+                if (j < adj_graph[i].size() - 1) cout << ", ";
+            }
+        }
+        cout << endl;
+    }
+}
+
+
+void MyGraph::printGraphPair(std::vector<pair<int,int>>& adj) {
+    for (auto& [u, v] : adj) {
+        std::cout << u << " - " << v << "\n";
+    }
+}
+
+void MyGraph::printGraphCC(std::vector<std::vector<int>>& _CC) {
+    for (auto& comp : _CC) {
+        cout << "{";
+        for (size_t i = 0; i < comp.size(); ++i) {
+            cout << comp[i];
+            if (i + 1 < comp.size()) cout << ", ";
+        }
+        cout << "} ";
+    }
+}
 
 #pragma endregion
 
