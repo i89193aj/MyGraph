@@ -24,8 +24,6 @@ struct Edges {
     }
 };
 
-
-
 class MyGraph {
 private:
     typedef std::pair<int, int> T;
@@ -145,7 +143,7 @@ class TarjanSCC {
                 dfs(v);
                 low[u] = std::min(low[u], low[v]);
             }
-            else if (instack[v]) {
+            else if (instack[v]) { //重要：如果父節點不在stack內，那就代表不夠成環，所以不會更新low[u]
                 low[u] = std::min(low[u],low[v]);
             }
         }
@@ -394,8 +392,6 @@ struct Edge {
         : _from(from), _to(to), _weight(weight) {
     }
 };
-
-
 
 class BellmanFord {
     using  T = std::pair<int, int>;
@@ -737,7 +733,6 @@ public:
         clear();
     }
 };
-
 
 
 extern DLL_API MyGraph ClassTemplateInstance;

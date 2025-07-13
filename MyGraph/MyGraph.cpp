@@ -24,31 +24,8 @@ enum LeetcodeExam {
 };
 
 
-
 int main()
 {
-    int n = 5;
-    vector<vector<int>> edges = {
-        {0, 1, 2},
-        {0, 4, 8},
-        {1, 2, 3},
-        {1, 4, 2},
-        {2, 3, 1},
-        {3, 4, 1}
-    };
-    int distanceThreshold = 2;
-    vector<vector<int>> qfwe = { {0,1} };
-    vector<vector<int>> graph12345 = {
-    {1},    // 0 → 1
-    {2},    // 1 → 2
-    {3, 0}, // 2 → 3, 0
-    {}      // 3 has no outgoing edges
-    };
-
-    //vector<vector<int>> asf = findSCCs(4, graph12345);
-
-
-
     //try case
     LeetcodeExam ExamEnum = Leetcodexxx;    //ChangeForExam
     //intput
@@ -71,6 +48,7 @@ int main()
     default:
         break;
     }
+
     #pragma region MyGraph
     #pragma region Dijkstra Alogrithm
     std::cout << "====== 測試一、 Dijkstra 測試 ======" << std::endl;
@@ -178,7 +156,6 @@ int main()
        size = 0, capacity = 0
     */
     #pragma endregion
-
 
     #pragma region Floyd-Warshall
     std::cout << "\n====== 測試三、 Floyd-Warshall 測試 ======" << std::endl;
@@ -451,9 +428,9 @@ int main()
 
     std::cout << "測試2. Strongly Connected Component(SCC) (有向圖)：\n";
     /* Strongly Connected Component(SCC) & Weakly connected component(WCC) 測試圖：
-        0 →  1 → 2
-        ↑    ↓
-        └─  3 → 4
+        0 →  1 → 2 → 3 → 4
+        ↑         ↓
+        └─————   
     */
     int CC_node = 5;
     vector<vector<int>> graphforCC = {
@@ -486,13 +463,9 @@ int main()
     GraphCC.printGraphCC(wccs);
     #pragma endregion
 
-
-
-
-    return 0;
     #pragma endregion
 
-    
+    return 0;
 }
 
 #pragma region MyGraph
